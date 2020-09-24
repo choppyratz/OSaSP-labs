@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1600771587 source:c:\users\german\desktop\лабы\осисп\lab 1\lab\main.c
+	<windows.h>
+	<math.h>
+	<string.h>
+
