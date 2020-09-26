@@ -1,6 +1,8 @@
 #include<windows.h>
 #include<math.h>
 #include<string.h>
+#include<stdlib.h>
+#include<stdio.h>
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -17,6 +19,97 @@ char str[1000];
 int startX = 0, startY = 0, endX = 0, endY = 0;
 BOOL isClickedMouse = FALSE;
 
+
+struct figureElem {
+    POINT *points;
+    enum figure figureName;
+    int angleCount;
+    char str[100];
+} typedef FigureStruct;
+
+FigureStruct figures[1000];
+int figureCount = 0;
+POINT tempLine[2];
+
+
+void addFigure(enum figure fName, POINT *points) {
+
+    switch (fName) {
+        case line:
+            figures[figureCount].points = (POINT*)malloc(sizeof(POINT) * 2);
+            figures[figureCount].figureName = line;
+        break;
+        case rectangle:
+            figures[figureCount].points = (POINT*)malloc(sizeof(POINT) * 2);
+            figures[figureCount].figureName = rectangle;
+        break;
+        case ellipse:
+            figures[figureCount].points = (POINT*)malloc(sizeof(POINT) * 2);
+            figures[figureCount].figureName = ellipse;
+        break;
+        case text:
+            figures[figureCount].points = (POINT*)malloc(sizeof(POINT));
+            figures[figureCount].figureName = text;
+            figures[figureCount].points[0].x = points[0].x;
+            figures[figureCount].points[0].y = points[0].y;
+            strcpy(figures[figureCount].str, str);
+            figureCount++;
+        return;
+        case brokenLine:
+            figures[figureCount].points = (POINT*)malloc((angleCount + 1) * sizeof(POINT));
+            figures[figureCount].figureName = brokenLine;
+            figures[figureCount].angleCount = angleCount;
+            for (int i = 0; i <= angleCount; i++) {
+                figures[figureCount].points[i].x = points[i].x;
+                figures[figureCount].points[i].y = points[i].y;
+            }
+            figureCount++;
+        return;
+        case multiAngle:
+            figures[figureCount].points = (POINT*)malloc((angleCount + 1) * sizeof(POINT));
+            figures[figureCount].figureName = multiAngle;
+            figures[figureCount].angleCount = angleCount;
+            for (int i = 0; i <= angleCount; i++) {
+                figures[figureCount].points[i].x = points[i].x;
+                figures[figureCount].points[i].y = points[i].y;
+            }
+            figureCount++;
+        return;
+
+    }
+
+    for (int i = 0; i <= sizeof(*points) / sizeof(POINT); i++) {
+        figures[figureCount].points[i].x = points[i].x;
+        figures[figureCount].points[i].y = points[i].y;
+    }
+    figureCount++;
+}
+
+void updateWND(HDC hdc) {
+    for (int i = 0; i < figureCount; i++) {
+        switch (figures[i].figureName) {
+            case line:
+                MoveToEx(hdc, figures[i].points[0].x, figures[i].points[0].y, NULL);
+                LineTo(hdc, figures[i].points[1].x, figures[i].points[1].y);
+            break;
+            case rectangle:
+                Rectangle(hdc, figures[i].points[0].x, figures[i].points[0].y, figures[i].points[1].x, figures[i].points[1].y);
+            break;
+            case ellipse:
+                Ellipse(hdc, figures[i].points[0].x, figures[i].points[0].y, figures[i].points[1].x, figures[i].points[1].y);
+            break;
+            case multiAngle:
+                Polyline(hdc, figures[i].points, figures[i].angleCount + 1);
+            break;
+            case brokenLine:
+                Polyline(hdc, figures[i].points, figures[i].angleCount);
+            break;
+            case text:
+                TextOutA(hdc, figures[i].points[0].x, figures[i].points[0].y, figures[i].str, strlen(figures[i].str));
+            break;
+        }
+    }
+}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow)
 {
     HWND hWnd;
@@ -109,6 +202,7 @@ WPARAM wParam, LPARAM lParam)
                     TextOutA(hdc,endX, endY, str, strlen(str));
                 break;
             }
+            updateWND(hdc);
             EndPaint(hWnd, &ps);
         break;
         case WM_LBUTTONDOWN:
@@ -127,6 +221,7 @@ WPARAM wParam, LPARAM lParam)
                     points[currentAngle].y = startY;
                     points[currentAngle + 1].x = points[0].x;
                     points[currentAngle + 1].y = points[0].y;
+                    addFigure(activeFigure, points);
                     InvalidateRect(hWnd, NULL, TRUE);
                     UpdateWindow(hWnd);
                     currentAngle = 0;
@@ -143,9 +238,43 @@ WPARAM wParam, LPARAM lParam)
             isClickedMouse = FALSE;
             endX=LOWORD(lParam);
             endY=HIWORD(lParam);
-            if (activeFigure == text) {
-                InvalidateRect(hWnd, NULL, TRUE);
-                UpdateWindow(hWnd);
+
+            switch (activeFigure) {
+                case line:
+                {
+                    tempLine[0].x = startX;
+                    tempLine[0].y = startY;
+
+                    tempLine[1].x = endX;
+                    tempLine[1].y = endY;
+                    addFigure(line, tempLine);
+                }
+                break;
+                case rectangle:
+                    tempLine[0].x = startX;
+                    tempLine[0].y = startY;
+
+                    tempLine[1].x = endX;
+                    tempLine[1].y = endY;
+                    addFigure(rectangle, tempLine);
+                break;
+                case ellipse:
+                    tempLine[0].x = startX;
+                    tempLine[0].y = startY;
+
+                    tempLine[1].x = endX;
+                    tempLine[1].y = endY;
+                    addFigure(ellipse, tempLine);
+                break;
+                case text:
+                    TextOutA(hdc,endX, endY, str, strlen(str));
+                    POINT tempTextPoint;
+                    tempLine[0].x = endX;
+                    tempLine[0].y = endY;
+                    addFigure(text, tempLine);
+                    InvalidateRect(hWnd, NULL, TRUE);
+                    UpdateWindow(hWnd);
+                break;
             }
         break;
         case WM_MOUSEMOVE:
@@ -182,6 +311,7 @@ WPARAM wParam, LPARAM lParam)
                 break;
                 case 1005:
                     printf("Enter string: ");
+                    fflush(stdin);
                     gets(str);
                     activeFigure = text;
                 break;
