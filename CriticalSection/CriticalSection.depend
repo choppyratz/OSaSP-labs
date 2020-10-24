@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1603568541 source:c:\users\german\desktop\лабы\осисп\lab 1\criticalsection\proc1.cpp
+	<iostream>
+	<windows.h>
+
+1603569452 source:c:\users\german\desktop\лабы\осисп\lab 1\criticalsection\main.cpp
+	<iostream>
+	<windows.h>
+	<string>
+
