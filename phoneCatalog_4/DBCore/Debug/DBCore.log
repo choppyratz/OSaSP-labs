@@ -1,0 +1,27 @@
+﻿  pch.cpp
+C:\Users\German\source\repos\DBCore\Address.h(24,17): warning C4251: Address::tel: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\German\source\repos\DBCore\Address.h(25,21): warning C4251: Address::surname: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\German\source\repos\DBCore\Address.h(26,18): warning C4251: Address::name: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\German\source\repos\DBCore\Address.h(27,24): warning C4251: Address::fatherName: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\German\source\repos\DBCore\Address.h(28,20): warning C4251: Address::street: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\German\source\repos\DBCore\pch.cpp(103,20): warning C4018: <: несоответствие типов со знаком и без знака
+  Address.cpp
+C:\Users\German\source\repos\DBCore\Address.h(24,17): warning C4251: Address::tel: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\German\source\repos\DBCore\Address.h(25,21): warning C4251: Address::surname: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\German\source\repos\DBCore\Address.h(26,18): warning C4251: Address::name: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\German\source\repos\DBCore\Address.h(27,24): warning C4251: Address::fatherName: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\German\source\repos\DBCore\Address.h(28,20): warning C4251: Address::street: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "Address"
+D:\visual stuido\VC\Tools\MSVC\14.27.29110\include\xstring(4564): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+  dllmain.cpp
+  Создание кода...
+     Создается библиотека C:\Users\German\source\repos\phoneCatalog\Debug\DBCore.lib и объект C:\Users\German\source\repos\phoneCatalog\Debug\DBCore.exp
+  DBCore.vcxproj -> C:\Users\German\source\repos\phoneCatalog\Debug\DBCore.dll
