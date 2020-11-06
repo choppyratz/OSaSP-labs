@@ -1,0 +1,3 @@
+﻿  ApiHookingTest.cpp
+C:\Users\German\source\repos\ApiHookingTest\ApiHookingTest.cpp(24,10): warning C4101: buffer_read: неиспользованная локальная переменная
+  ApiHookingTest.vcxproj -> C:\Users\German\source\repos\ApiHooking\Debug\ApiHookingTest.exe
