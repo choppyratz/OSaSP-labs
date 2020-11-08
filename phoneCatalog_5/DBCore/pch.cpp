@@ -7,7 +7,7 @@
 #include <windows.h>
 #pragma warning(disable : 4251)
 
-std::string dbPath = "C:\\Users\\German\\source\\repos\\phoneCatalog\\Debug\\addresses.txt";
+std::string dbPath = "C:\\Users\\German\\source\\repos\\phoneCatalog\\Debug\\test.txt";
 struct node
 {
 	int key;
@@ -119,8 +119,11 @@ __declspec(dllexport) int hashcode(std::string s) {
 	return balance(p);
 }
 
-std::vector<std::string> explode(std::string const& s, char delim)
+std::vector<std::string> explode(std::string& s, char delim)
 {
+	if (s[0] != '1') {
+		s = std::string("1 " + s);
+	}
 	std::vector<std::string> result;
 	std::istringstream iss(s);
 
@@ -165,7 +168,7 @@ void addAddress(std::vector<std::string> data) {
 	records.push_back(adr);
 }
 
-void ReadInChunks(const char* pszFileName, bool isSeaerchMode) {
+void ReadInChunks(const char* pszFileName, bool isSeaerchMode, int page) {
 	records = std::vector<Address*>();
 	SYSTEM_INFO sysinfo = { 0 };
 	::GetSystemInfo(&sysinfo);
@@ -181,51 +184,53 @@ void ReadInChunks(const char* pszFileName, bool isSeaerchMode) {
 
 		HANDLE hmap = CreateFileMappingA(hfile, NULL, PAGE_READONLY, 0, 0, NULL);
 		if (hmap != NULL) {
+			int currentPage = 0;
 			for (unsigned long long offset = 0; offset < cbFile; offset += cbView) {
 				DWORD high = static_cast<DWORD>((offset >> 32) & 0xFFFFFFFFul);
 				DWORD low = static_cast<DWORD>(offset & 0xFFFFFFFFul);
-				// The last view may be shorter.
 				if (offset + cbView > cbFile) {
 					cbView = static_cast<int>(cbFile - offset);
 				}
-				const char* pView = static_cast<const char*>(
-					MapViewOfFile(hmap, FILE_MAP_READ, high, low, cbView));
-				if (pView != NULL) {
-					//std::string str = "";
-					char test;
-					for (int i = 0; i <= cbView; i++) {
-						test = pView[i];
-						if (test == '\n' || test == '\r') {
-							if (buffStr != "") {
-								std::vector<std::string> parsedAddress = explode(buffStr, ' ');
-								if (isSeaerchMode) {
-									if (isMathcedRecord(parsedAddress, indexes, values)) {
+				if (page == currentPage) {
+					const char* pView = static_cast<const char*>(
+						MapViewOfFile(hmap, FILE_MAP_READ, high, low, cbView));
+					if (pView != NULL) {
+						char test;
+						for (int i = 0; i < cbView; i++) {
+							test = pView[i];
+							if (test == '\n' || test == '\r') {
+								if (buffStr != "") {
+									std::vector<std::string> parsedAddress = explode(buffStr, ' ');
+									if (isSeaerchMode) {
+										if (isMathcedRecord(parsedAddress, indexes, values)) {
+											addAddress(parsedAddress);
+										}
+									}
+									else {
 										addAddress(parsedAddress);
 									}
 								}
-								else {
-									addAddress(parsedAddress);
+								buffStr = "";
+								continue;
+							}
+
+							buffStr += test;
+						}
+						std::vector<std::string> tempParsedAddress = explode(buffStr, ' ');
+						if (tempParsedAddress.size() == 9) {
+							if (isSeaerchMode) {
+								if (isMathcedRecord(tempParsedAddress, indexes, values)) {
+									addAddress(tempParsedAddress);
 								}
 							}
-							buffStr = "";
-							continue;
-						}
-						
-						buffStr += test;
-					}
-					std::vector<std::string> tempParsedAddress = explode(buffStr, ' ');
-					if (tempParsedAddress.size() == 9) {
-						if (isSeaerchMode) {
-							if (isMathcedRecord(tempParsedAddress, indexes, values)) {
+							else {
 								addAddress(tempParsedAddress);
 							}
+							buffStr = "";
 						}
-						else {
-							addAddress(tempParsedAddress);
-						}
-						buffStr = "";
 					}
 				}
+				currentPage++;
 			}
 			CloseHandle(hmap);
 		}
@@ -233,8 +238,8 @@ void ReadInChunks(const char* pszFileName, bool isSeaerchMode) {
 	}
 }
 
-__declspec(dllexport) std::vector<Address*> loadDB() {
-	ReadInChunks(dbPath.c_str(), false);
+__declspec(dllexport) std::vector<Address*> loadDB(int cP) {
+	ReadInChunks(dbPath.c_str(), false, cP);
 	
 	return records;
 }
@@ -242,7 +247,7 @@ __declspec(dllexport) std::vector<Address*> loadDB() {
 __declspec(dllexport) std::vector<Address*> searchAddresses(std::vector<int> _indexes, std::vector<std::string> _values) {
 	indexes = _indexes;
 	values = _values;
-	ReadInChunks(dbPath.c_str(), true);
+	ReadInChunks(dbPath.c_str(), true, 0);
 
 	return records;
 }

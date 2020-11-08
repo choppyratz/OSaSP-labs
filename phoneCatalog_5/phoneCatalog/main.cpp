@@ -19,6 +19,7 @@
 HWND hWndListView;
 const std::vector<LPCWSTR> columnsName{ L"Телефон", L"Фамилия", L"Имя", L"Отчество", L"Улица", L"Дом", L"Корпус", L"Квартира" };
 std::vector<HWND> Edits = std::vector<HWND>();
+int currentPage = 0;
 
 class Address {
 public:
@@ -151,8 +152,8 @@ HWND CreateListView(HWND hWndParent)
 
 HMODULE hmd = LoadLibrary(L"DBCore.dll");
 
-typedef std::vector<Address*>(*lDB)();
-lDB loadDB = (lDB)GetProcAddress(hmd, "?loadDB@@YA?AV?$vector@PAVAddress@@V?$allocator@PAVAddress@@@std@@@std@@XZ");
+typedef std::vector<Address*>(*lDB)(int);
+lDB loadDB = (lDB)GetProcAddress(hmd, "?loadDB@@YA?AV?$vector@PAVAddress@@V?$allocator@PAVAddress@@@std@@@std@@H@Z");
 
 typedef std::vector<Address*>(*search)(std::vector<int>, std::vector<std::string>);
 search searchAddresses = (search)GetProcAddress(hmd, "?searchAddresses@@YA?AV?$vector@PAVAddress@@V?$allocator@PAVAddress@@@std@@@std@@V?$vector@HV?$allocator@H@std@@@2@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@Z");
@@ -174,7 +175,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	if (uMsg == WM_CREATE) {
 
-		std::vector<Address*> result = loadDB();
+		std::vector<Address*> result = loadDB(currentPage);
 
 		hWndListView = CreateListView(hWnd);
 		InitListViewColumns(hWndListView);
@@ -195,6 +196,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			20,
 			hWnd,
 			(HMENU)10000,
+			(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+			NULL);
+		ShowWindow(hwndButton, SW_SHOWDEFAULT);
+
+		HWND hwndright = CreateWindow(
+			L"BUTTON",
+			L">",
+			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+			840,
+			10,
+			20,
+			20,
+			hWnd,
+			(HMENU)10001,
+			(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+			NULL);
+		ShowWindow(hwndButton, SW_SHOWDEFAULT);
+
+		HWND hwndleft = CreateWindow(
+			L"BUTTON",
+			L"<",
+			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+			810,
+			10,
+			20,
+			20,
+			hWnd,
+			(HMENU)10002,
 			(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 			NULL);
 		ShowWindow(hwndButton, SW_SHOWDEFAULT);
@@ -220,8 +249,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				if (strcmp(buffer, "") != 0) {
 					editIndexes.push_back(i + 1);
 					editValues.push_back(std::string(buffer));
-					//MessageBoxW(hWnd, columnsName[i], columnsName[i], MB_OK);
-
 				}
 				
 			}
@@ -229,6 +256,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			result = searchAddresses(editIndexes, editValues);
 			ListView_DeleteAllItems(hWndListView);
 			
+
+			InsertListViewItems(hWndListView, result);
+			UpdateWindow(hWndListView);
+		}
+
+		if (LOWORD(wParam) == 10001) {
+			currentPage++;
+			std::vector<Address*> result = loadDB(currentPage);
+			ListView_DeleteAllItems(hWndListView);
+
+
+			InsertListViewItems(hWndListView, result);
+			UpdateWindow(hWndListView);
+		}
+
+		if (LOWORD(wParam) == 10002) {
+			if (currentPage > 0) {
+				currentPage--;
+			}
+			std::vector<Address*> result = loadDB(currentPage);
+			ListView_DeleteAllItems(hWndListView);
 
 			InsertListViewItems(hWndListView, result);
 			UpdateWindow(hWndListView);
@@ -257,7 +305,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wc.hInstance = hInstance;
 
 	RegisterClassEx(&wc);
-	hMainWindow = CreateWindowEx(NULL, MAIN_CLASS_NAME, MAIN_WINDOW_NAME, WS_OVERLAPPED | WS_SYSMENU, 400, 400, 820, 600, NULL, NULL, hInstance, NULL);
+	hMainWindow = CreateWindowEx(NULL, MAIN_CLASS_NAME, MAIN_WINDOW_NAME, WS_OVERLAPPED | WS_SYSMENU, 400, 400, 1100, 600, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hMainWindow, nCmdShow);
 	UpdateWindow(hMainWindow);
