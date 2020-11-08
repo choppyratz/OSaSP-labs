@@ -1,0 +1,6 @@
+﻿  main.cpp
+C:\Users\German\source\repos\phoneCatalog\main.cpp(91,20): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\German\source\repos\phoneCatalog\main.cpp(115,20): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\German\source\repos\phoneCatalog\main.cpp(184,21): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\German\source\repos\phoneCatalog\main.cpp(209,22): warning C4018: <: несоответствие типов со знаком и без знака
+  phoneCatalog.vcxproj -> C:\Users\German\source\repos\phoneCatalog\Debug\phoneCatalog.exe
